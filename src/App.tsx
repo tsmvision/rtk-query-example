@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
-import {useGetTestQuery} from "./redux/api/pokemon.ts";
+import {pokemonApi, useGetTestQuery} from "./redux/api/pokemon.ts";
 
 function App() {
   const [count, setCount] = useState(0);
@@ -10,10 +10,24 @@ function App() {
       data,
   } = useGetTestQuery();
 
+  //
+  // const {
+  //     data: test2
+  // } = useGetTest2Query();
+
+  // useEffect(() => {
+  //     console.log('test2: ', test2);
+  // }, [test2]);
+
   const name = data?.name ?? '';
   return (
     <>
         <h3>{name}</h3>
+        {/*{*/}
+        {/*    test2?.data?.map(*/}
+        {/*        (element) => <div>{element}</div>*/}
+        {/*    )*/}
+        {/*}*/}
       <div>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
