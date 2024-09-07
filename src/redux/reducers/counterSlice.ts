@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import {AppDispatch} from "../store.ts";
 
 export interface CounterState {
     value: number
@@ -14,6 +15,8 @@ export const counterSlice = createSlice({
     initialState,
     reducers: {
         increment: (state) => {
+            console.log('increment');
+            console.log(state.value);
             // Redux Toolkit allows us to write "mutating" logic in reducers. It
             // doesn't actually mutate the state because it uses the Immer library,
             // which detects changes to a "draft state" and produces a brand new
@@ -27,7 +30,15 @@ export const counterSlice = createSlice({
             state.value += action.payload
         },
     },
-})
+});
+
+export const incrementReduxThunk = () => {
+    return (dispatch: AppDispatch) => {
+        setInterval(() => {
+            dispatch(increment());
+        }, 5000);
+    };
+};
 
 // Action creators are generated for each case reducer function
 export const { increment, decrement, incrementByAmount } = counterSlice.actions

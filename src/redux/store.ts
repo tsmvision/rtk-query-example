@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit'
 import {counterSlice} from "./reducers/counterSlice.ts";
 import {pokemonApi} from "./api/pokemon.ts";
+import {cometdConnectionStatusSlice} from "./reducers/cometdConnectionStatusSlice.ts";
 
 export const store = configureStore({
     reducer: {
         [pokemonApi.reducerPath]: pokemonApi.reducer,
         counter: counterSlice.reducer,
+        cometdConnectionStatus: cometdConnectionStatusSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(pokemonApi.middleware),

@@ -1,14 +1,30 @@
-import { useState, useEffect } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
+import {useState} from 'react'
+// import reactLogo from './assets/react.svg'
+// import viteLogo from '/vite.svg'
 import './App.css'
-import {pokemonApi, useGetTestQuery} from "./redux/api/pokemon.ts";
+// import { useGetTestQuery} from "./redux/api/pokemon.ts";
+// import {useAppDispatch, useAppSelector} from "./redux/hooks.ts";
+// import {incrementReduxThunk} from "./redux/reducers/counterSlice.ts";
+import {CometD} from "cometd";
+import {useGetMetaConnectQuery} from "./redux/api/cometdApi.ts";
 
 function App() {
   const [count, setCount] = useState(0);
-  const {
-      data,
-  } = useGetTestQuery();
+  // const {
+  //     data,
+  // } = useGetTestQuery();
+
+  useGetMetaConnectQuery();
+
+  // const {
+  //     value
+  // } = useAppSelector(state=> state.counter);
+
+  // const dispatch = useAppDispatch();
+
+  // useEffect(() => {
+  //     console.log('value: ', value);
+  // }, [value]);
 
   //
   // const {
@@ -19,10 +35,16 @@ function App() {
   //     console.log('test2: ', test2);
   // }, [test2]);
 
-  const name = data?.name ?? '';
+    // useEffect(() => {
+    //     console.log('data: ', data);
+    // }, [data]);
+
+    const cometd = new CometD();
+    cometd.getStatus()
+  // const name = data?.name ?? '';
   return (
     <>
-        <h3>{name}</h3>
+        {/*<h3>{name}</h3>*/}
         {/*{*/}
         {/*    test2?.data?.map(*/}
         {/*        (element) => <div>{element}</div>*/}
@@ -30,10 +52,10 @@ function App() {
         {/*}*/}
       <div>
         <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
+          {/*<img src={viteLogo} className="logo" alt="Vite logo" />*/}
         </a>
         <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
+          {/*<img src={reactLogo} className="logo react" alt="React logo" />*/}
         </a>
       </div>
       <h1>Vite + React</h1>

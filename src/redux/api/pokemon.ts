@@ -1,7 +1,7 @@
 import {BaseQueryFn, createApi, fetchBaseQuery} from '@reduxjs/toolkit/query/react'
 
 interface Pokemon {
-    name: string;
+    value: number;
 }
 
 // interface Data {
@@ -28,28 +28,39 @@ export const pokemonApi = createApi({
     reducerPath: 'pokemonApi',
     baseQuery: baseQuery,
     endpoints: (builder) => ({
-        getPokemonByName: builder.query<Pokemon, string>({
-            query: (name) => `pokemon/${name}`,
-        }),
-        getTest: builder.query<Pokemon, string>({
+        // getPokemonByName: builder.query<Pokemon, string>({
+        //     query: (name) => `pokemon/${name}`,
+        // }),
+        getTest: builder.query<Pokemon, void>({
             // The query is not relevant here, so a `null` returning `queryFn` is used
-            queryFn: async (channel) => {
+            queryFn: async () => {
                 return {
-                    channel,
-                    data: {name: ''}
+                    data: {value: 0}
                 };
             },
             async onCacheEntryAdded(
-                channel,
+                _,
                 { cacheDataLoaded, updateCachedData, cacheEntryRemoved }
             ){
                 await cacheDataLoaded;
-                console.log(channel)
-                // listen
 
-                updateCachedData((draft) => {
-                    draft.name = 'Merong';
-                });
+                let value = 0;
+                let enabled = false;
+
+                setInterval(() => {
+                    console.log('enabled: ', enabled);
+                    if (enabled) {
+                        updateCachedData((dfraft) => {
+                            dfraft.value = value;
+                        });
+                    }
+                    value += 1;
+                    if (value % 2 === 0) {
+                        enabled = false;
+                    } else {
+                        enabled = true;
+                    }
+                }, 2000);
 
                 await cacheEntryRemoved;
                 //
@@ -59,22 +70,22 @@ export const pokemonApi = createApi({
             // any queries that provide the 'Post' or 'User' tags to re-fetch if the queries
             // are currently subscribed to the cached data
         }),
-        getTest2: builder.query<string, void>({
-            // The query is not relevant here, so a `null` returning `queryFn` is used
-            query: () => '/api2',
-
-
-            // This mutation takes advantage of tag invalidation behaviour to trigger
-            // any queries that provide the 'Post' or 'User' tags to re-fetch if the queries
-            // are currently subscribed to the cached data
-        }),
+        // getTest2: builder.query<string, void>({
+        //     // The query is not relevant here, so a `null` returning `queryFn` is used
+        //     query: () => '/api2',
+        //
+        //
+        //     // This mutation takes advantage of tag invalidation behaviour to trigger
+        //     // any queries that provide the 'Post' or 'User' tags to re-fetch if the queries
+        //     // are currently subscribed to the cached data
+        // }),
     }),
 });
 
 // Export hooks for usage in functional components, which are
 // auto-generated based on the defined endpoints
 export const {
-    useGetPokemonByNameQuery,
+    // useGetPokemonByNameQuery,
     useGetTestQuery,
     // useGetTest2Query,
 } = pokemonApi
