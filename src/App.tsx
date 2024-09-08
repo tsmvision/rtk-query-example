@@ -1,4 +1,4 @@
-import {useState} from 'react'
+import {useState, useEffect} from 'react'
 // import reactLogo from './assets/react.svg'
 // import viteLogo from '/vite.svg'
 import './App.css'
@@ -14,7 +14,13 @@ function App() {
   //     data,
   // } = useGetTestQuery();
 
-  useGetMetaConnectQuery();
+  const {data, }= useGetMetaConnectQuery(undefined,{
+      refetchOnReconnect: true
+  });
+
+  useEffect(() => {
+      console.log(data);
+  }, [data]);
 
   // const {
   //     value

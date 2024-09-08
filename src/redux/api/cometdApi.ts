@@ -1,18 +1,25 @@
 import {createApi, fetchBaseQuery} from "@reduxjs/toolkit/query/react";
 import {cometd} from "../../utility/cometd-utility.ts";
 import {Message} from "cometd";
-import {updateIsConnected, updateIsHandshaked} from "../reducers/cometdConnectionStatusSlice.ts";
+
+export interface CometdConnectionStatus {
+    isConnected: boolean,
+    isHandshaked: boolean,
+}
 
 export const cometdApi = createApi({
     baseQuery: fetchBaseQuery({ baseUrl: '/' }),
     endpoints: (build) => ({
-        getMetaConnect: build.query<string, void>({
+        getMetaConnect: build.query<CometdConnectionStatus, void>({
             queryFn: () => {
-                return {data: 'no_value'};
+                return {data: {
+                    isConnected: false, isHandshaked: false,
+                    }
+                };
             },
             async onCacheEntryAdded(
                 _,
-                { cacheDataLoaded, cacheEntryRemoved, dispatch }
+                { updateCachedData, cacheDataLoaded, cacheEntryRemoved, dispatch }
             ) {
                 // create a websocket connection when the cache subscription starts
                 let listener;
@@ -20,36 +27,55 @@ export const cometdApi = createApi({
 
                 try {
                     // wait for the initial query to resolve before proceeding
-                    await cacheDataLoaded
+                    await cacheDataLoaded;
 
                     listener = cometd.addListener('/meta/connect', (message: Message) => {
                         if (message.successful) {
-                            dispatch(updateIsConnected(true));
-
                             handshakeListener = cometd.addListener('/meta/handshake', (message) => {
                                 if (message.successful) {
-                                    dispatch(updateIsHandshaked(true));
+                                    updateCachedData((draft) => {
+                                        draft.isConnected = true;
+                                        draft.isHandshaked = true;
+                                    });
                                 }
                                 else {
-                                    dispatch(updateIsHandshaked(false));
+                                    updateCachedData((draft) => {
+                                        draft.isConnected = true;
+                                        draft.isConnected = false;
+                                    });
+
                                     cometd.handshake((message) => {
                                         if (message.successful) {
-                                            dispatch(updateIsHandshaked(true));
+                                            updateCachedData((draft) => {
+                                                draft.isConnected = true;
+                                                draft.isHandshaked = true;
+                                            });
                                         } else {
-                                            dispatch(updateIsHandshaked(false));
+                                            updateCachedData((draft) => {
+                                                draft.isConnected = true;
+                                                draft.isHandshaked = false;
+                                            });
                                         }
                                     });
                                 }
                             });
                         }
                         else {
-                            dispatch(updateIsConnected(false));
+                            updateCachedData((draft) => {
+                                draft.isConnected = false;
+                                draft.isHandshaked = false;
+                            });
                         }
                     });
-                } catch {
+                } catch(e) {
+                    console.log(e);
+                    updateCachedData((draft) => {
+                        draft.isConnected = false;
+                        draft.isHandshaked = false;
+                    });
                     // no-op in case `cacheEntryRemoved` resolves before `cacheDataLoaded`,
                     // in which case `cacheDataLoaded` will throw
-                };
+                }
                 // cacheEntryRemoved will resolve when the cache subscription is no longer active
                 await cacheEntryRemoved
                 // perform cleanup steps once the `cacheEntryRemoved` promise resolves
@@ -62,6 +88,6 @@ export const cometdApi = createApi({
             },
         }),
     }),
-})
+});
 
 export const { useGetMetaConnectQuery } = cometdApi
